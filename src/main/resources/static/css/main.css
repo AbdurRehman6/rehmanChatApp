@@ -131,12 +131,65 @@ button.accent {
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
-    background-color: #fff;
+    background-color: #453aaa;
     box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
     margin-top: 30px;
     height: calc(100% - 60px);
     max-height: 600px;
     position: relative;
+}
+
+/* Username Page Styling */
+#username-page {
+    text-align: center;
+}
+
+.username-form-wrapper {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+}
+
+.title {
+    font-size: 1.8em;
+    color: #00796b; /* Teal color */
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #666; /* Gray subtitle */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn.primary {
+    background-color: #00796b; /* Teal button */
+    color: white;
+}
+
+.btn.primary:hover {
+    background-color: #004d40; /* Darker teal on hover */
 }
 
 #chat-page ul {
@@ -285,3 +338,4 @@ button.accent {
         font-size: 1.1em;
     }
 }
+
