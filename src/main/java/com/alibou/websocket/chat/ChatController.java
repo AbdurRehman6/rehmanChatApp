@@ -6,21 +6,28 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-
-
+import java.time.LocalDateTime;
 
 @Controller
 public class ChatController {
 
     @Autowired
-    private chatHistoyService chatServe;
+    private chatHistoryRepository chatHistoryRepository;
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(
             @Payload ChatMessage chatMessage
     ) {
-        return chatMessage;
+        // Save the message to the database
+        chatHistory chatHistory = new chatHistory();
+        chatHistory.setUsername(chatMessage.getSender());
+        chatHistory.setChat(chatMessage.getContent());
+    
+        
+        chatHistoryRepository.save(chatHistory);
+
+        return chatMessage; // Broadcast to all clients
     }
 
     @MessageMapping("/chat.addUser")
@@ -29,12 +36,8 @@ public class ChatController {
             @Payload ChatMessage chatMessage,
             SimpMessageHeaderAccessor headerAccessor
     ) {
-        // Add username in web socket session
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        chatHistory newChat = new chatHistory ();
-        newChat.setChat(chatMessage.getContent());
-        newChat.setChat(chatMessage.getSender());
-        chatServe.chatHistorySave(newChat);
-        return chatMessage;
+        
+        return chatMessage; // Notify all clients that a user joined
     }
 }

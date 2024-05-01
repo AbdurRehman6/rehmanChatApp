@@ -19,17 +19,48 @@ var colors = [
 function connect(event) {
     username = document.querySelector('#name').value.trim();
 
-    if(username) {
+    if (username) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, onConnected, onError);
+        stompClient.connect({}, function () {
+            onConnected();
+
+            // Fetch chat history from the REST endpoint and display it
+            fetch('/api/chat/history') // Fetch from the new REST endpoint
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(chatMessage => {
+                        onMessageReceived({ body: JSON.stringify(chatMessage) }); // Render the saved chat message
+                    });
+                })
+                .catch(error => console.error('Error fetching chat history:', error));
+        }, onError);
+    } else {
+        alert("Please enter a valid username."); // Prevent connecting with empty username
     }
-    event.preventDefault();
+
+    event.preventDefault(); // Prevent default form submission behavior
 }
+
+
+// function connect(event) {
+//     username = document.querySelector('#name').value.trim();
+
+//     if(username) {
+//         usernamePage.classList.add('hidden');
+//         chatPage.classList.remove('hidden');
+
+//         var socket = new SockJS('/ws');
+//         stompClient = Stomp.over(socket);
+
+//         stompClient.connect({}, onConnected, onError);
+//     }
+//     event.preventDefault();
+// }
 
 
 function onConnected() {
@@ -65,6 +96,41 @@ function sendMessage(event) {
     }
     event.preventDefault();
 }
+
+// function onMessageReceived(payload) {
+//     var message = JSON.parse(payload.body);
+
+//     // Create a message element
+//     var messageElement = document.createElement('li');
+
+//     // Check if 'sender' is defined and valid
+//     var senderInitial = (message.sender && message.sender.length > 0) ? message.sender[0] : '?';
+
+//     if (message.type === 'JOIN') {
+//         messageElement.classList.add('event-message');
+//         messageElement.textContent = (message.sender ? message.sender : 'Unknown') + ' joined the chat!';
+//     } else if (message.type === 'LEAVE') {
+//         messageElement.classList.add('event-message');
+//         messageElement.textContent = (message.sender ? message.sender : 'Unknown') + ' left the chat!';
+//     } else {
+//         messageElement.classList.add('chat-message');
+
+//         var avatarElement = document.createElement('i');
+//         avatarElement.textContent = senderInitial; // Use the first character of 'sender' if defined
+//         avatarElement.style['background-color'] = getAvatarColor(message.sender || ''); // Handle possible 'undefined' sender
+
+//         messageElement.appendChild(avatarElement);
+
+//         var usernameElement = document.createTextNode(message.sender || 'Unknown');
+//         messageElement.appendChild(usernameElement);
+
+//         var textElement = document.createTextNode(message.content || 'No message content');
+//         messageElement.appendChild(textElement);
+//     }
+
+//     messageArea.appendChild(messageElement);
+//     messageArea.scrollTop = messageArea.scrollHeight;
+// }
 
 
 function onMessageReceived(payload) {
